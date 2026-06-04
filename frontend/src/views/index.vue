@@ -1,5 +1,5 @@
 <template>
-  <n-layout has-sider style="height: 100vh;">
+  <n-layout has-sider class="layout-root">
     <n-layout-sider
       collapse-mode="transform"
       :collapsed-width="64"
@@ -8,8 +8,8 @@
       bordered
       :native-scrollbar="false"
     >
-      <div style="padding: 16px; text-align: center;">
-        <n-h3 style="margin: 0;">MoviePop</n-h3>
+      <div class="sider-header">
+        <n-h3 class="sider-title">MoviePop</n-h3>
       </div>
       <n-menu
         :collapsed-width="64"
@@ -54,3 +54,16 @@ const menuOptions = [
   { label: '设置', key: 'Settings', icon: renderIcon(SettingsOutline) }
 ]
 </script>
+
+<style scoped>
+.layout-root {
+  height: 100vh;
+}
+.sider-header {
+  padding: 16px;
+  text-align: center;
+}
+.sider-title {
+  margin: 0;
+}
+</style>

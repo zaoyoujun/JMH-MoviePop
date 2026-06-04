@@ -12,5 +12,4 @@ import { darkTheme } from 'naive-ui'
   </n-config-provider>
 </template>
 
-<style scoped>
-</style>
+
