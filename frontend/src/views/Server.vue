@@ -259,8 +259,20 @@ function addSource() {
   background: #2f6df6;
 }
 
-.source-modal {
-  width: 480px;
+:global(.source-modal) {
+  width: min(420px, calc(100vw - 48px)) !important;
+}
+
+:global(.source-modal .n-card-header) {
+  padding: 18px 20px 8px;
+}
+
+:global(.source-modal .n-card__content) {
+  padding: 12px 20px 4px;
+}
+
+:global(.source-modal .n-card__footer) {
+  padding: 12px 20px 18px;
 }
 
 .library-section h2 {
