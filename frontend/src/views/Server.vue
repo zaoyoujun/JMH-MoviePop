@@ -5,12 +5,40 @@
         <h1>服务器</h1>
         <p>集中管理 WebDAV、OpenList 与本地媒体源，查看每个资源库的匹配情况。</p>
       </div>
-      <n-button type="primary" size="large" class="add-button" @click="showAddModal = true">
-        <template #icon>
-          <n-icon><AddOutline /></n-icon>
-        </template>
-        添加数据源
-      </n-button>
+      <div class="header-actions">
+        <n-button type="primary" size="large" class="add-button" @click="showTypePicker = !showTypePicker">
+          <template #icon>
+            <n-icon><AddOutline /></n-icon>
+          </template>
+          添加数据源
+        </n-button>
+
+        <div v-if="showTypePicker" class="type-picker">
+          <h2>选择服务器类型：</h2>
+          <div class="type-groups">
+            <section v-for="group in sourceTypeGroups" :key="group.id" class="type-group">
+              <button class="type-group-head" type="button" @click="toggleGroup(group.id)">
+                <span>{{ group.label }}</span>
+                <n-icon>
+                  <ChevronDownOutline v-if="openedGroup !== group.id" />
+                  <ChevronUpOutline v-else />
+                </n-icon>
+              </button>
+              <div v-if="openedGroup === group.id" class="type-options">
+                <button
+                  v-for="option in group.options"
+                  :key="option.value"
+                  type="button"
+                  @click="openSourceForm(option)"
+                >
+                  <span v-if="option.badge" class="option-badge">{{ option.badge }}</span>
+                  {{ option.label }}
+                </button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
     </header>
 
     <section class="library-section">
@@ -108,6 +136,8 @@
 import { computed, reactive, ref } from 'vue'
 import {
   AddOutline,
+  ChevronDownOutline,
+  ChevronUpOutline,
   CreateOutline,
   OptionsOutline,
   RefreshOutline,
@@ -115,6 +145,8 @@ import {
 } from '@vicons/ionicons5'
 
 const openedMenu = ref('')
+const openedGroup = ref('cloud')
+const showTypePicker = ref(false)
 const showAddModal = ref(false)
 
 const sources = ref([
@@ -186,6 +218,47 @@ const sourceTypeOptions = [
   { label: '本地存储', value: '本地存储' }
 ]
 
+const sourceTypeGroups = [
+  {
+    id: 'server',
+    label: '服务器',
+    options: [
+      { label: 'OpenList', value: 'openlist' },
+      { label: 'WebDAV', value: 'WebDAV' },
+      { label: 'FTP', value: 'FTP' }
+    ]
+  },
+  {
+    id: 'network',
+    label: '网络存储',
+    options: [
+      { label: 'SMB', value: 'SMB' },
+      { label: 'NFS', value: 'NFS' }
+    ]
+  },
+  {
+    id: 'cloud',
+    label: '云盘存储',
+    options: [
+      { label: '115网盘', value: 'openlist', badge: '115' }
+    ]
+  },
+  {
+    id: 'local',
+    label: '本地存储',
+    options: [
+      { label: '本地目录', value: '本地存储' }
+    ]
+  },
+  {
+    id: 'developing',
+    label: '开发中',
+    options: [
+      { label: '更多来源即将支持', value: '开发中' }
+    ]
+  }
+]
+
 const tintOptions = [
   { label: '灰紫', value: 'rgba(111, 110, 142, 0.62)' },
   { label: '酒红', value: 'rgba(95, 30, 30, 0.68)' },
@@ -197,6 +270,20 @@ const canSubmitSource = computed(() => sourceForm.name.trim() && sourceForm.path
 
 function toggleMenu(id) {
   openedMenu.value = openedMenu.value === id ? '' : id
+}
+
+function toggleGroup(id) {
+  openedGroup.value = openedGroup.value === id ? '' : id
+}
+
+function openSourceForm(option) {
+  if (option.value === '开发中') return
+
+  sourceForm.name = option.label
+  sourceForm.type = option.value
+  sourceForm.path = ''
+  showTypePicker.value = false
+  showAddModal.value = true
 }
 
 function addSource() {
@@ -259,6 +346,12 @@ function addSource() {
   background: #2f6df6;
 }
 
+.header-actions {
+  position: relative;
+  z-index: 10;
+  flex: 0 0 auto;
+}
+
 :global(.source-modal) {
   width: min(420px, calc(100vw - 48px)) !important;
 }
@@ -279,6 +372,90 @@ function addSource() {
   margin: 0 0 18px;
   color: #ffffff;
   font-size: 26px;
+}
+
+.type-picker {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: 12;
+  width: 312px;
+  padding: 12px 8px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  background: #2b2b2d;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.24);
+}
+
+.type-picker h2 {
+  margin: 0 8px 8px;
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.type-groups {
+  display: grid;
+  gap: 4px;
+}
+
+.type-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: #ffffff;
+  background: #3c3c3d;
+  cursor: pointer;
+}
+
+.type-group-head span {
+  font-weight: 700;
+}
+
+.type-options {
+  display: grid;
+  gap: 6px;
+  padding: 8px 8px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 0;
+  border-radius: 0 0 6px 6px;
+  background: #373738;
+}
+
+.type-options button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  color: #ffffff;
+  background: #4a4a4a;
+  cursor: pointer;
+}
+
+.type-options button:hover {
+  border-color: rgba(105, 240, 198, 0.76);
+  background: #545454;
+}
+
+.option-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 5px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  background: #ff784a;
 }
 
 .source-grid {
