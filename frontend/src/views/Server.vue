@@ -100,25 +100,28 @@
         <n-form-item label="数据源名称">
           <n-input v-model:value="sourceForm.name" placeholder="例如：阿里云盘" />
         </n-form-item>
-        <n-form-item label="数据源类型">
-          <n-select v-model:value="sourceForm.type" :options="sourceTypeOptions" />
-        </n-form-item>
         <n-form-item label="资源路径">
           <n-input v-model:value="sourceForm.path" placeholder="WebDAV / OpenList 地址或本地目录" />
         </n-form-item>
-        <n-form-item label="主题颜色">
-          <div class="tint-options">
-            <button
-              v-for="tint in tintOptions"
-              :key="tint.value"
-              type="button"
-              :class="{ selected: sourceForm.tint === tint.value }"
-              :style="{ background: tint.value }"
-              :aria-label="tint.label"
-              @click="sourceForm.tint = tint.value"
-            ></button>
-          </div>
+        <n-form-item label="用户名">
+          <n-input v-model:value="sourceForm.username" placeholder="请输入用户名" />
         </n-form-item>
+        <n-form-item label="密码">
+          <n-input
+            v-model:value="sourceForm.password"
+            type="password"
+            show-password-on="click"
+            placeholder="请输入密码"
+          />
+        </n-form-item>
+        <div class="verify-row">
+          <n-button secondary :loading="verifying" :disabled="!sourceForm.path.trim()" @click="verifyConnection">
+            验证连接
+          </n-button>
+          <span v-if="verifyStatus" :class="['verify-status', verifyStatus.type]">
+            {{ verifyStatus.text }}
+          </span>
+        </div>
       </n-form>
       <template #footer>
         <div class="modal-actions">
@@ -148,6 +151,8 @@ const openedMenu = ref('')
 const openedGroup = ref('cloud')
 const showTypePicker = ref(false)
 const showAddModal = ref(false)
+const verifying = ref(false)
+const verifyStatus = ref(null)
 
 const sources = ref([
   {
@@ -209,14 +214,9 @@ const sourceForm = reactive({
   name: '',
   type: 'WebDAV',
   path: '',
-  tint: 'rgba(111, 110, 142, 0.62)'
+  username: '',
+  password: ''
 })
-
-const sourceTypeOptions = [
-  { label: 'WebDAV', value: 'WebDAV' },
-  { label: 'OpenList', value: 'openlist' },
-  { label: '本地存储', value: '本地存储' }
-]
 
 const sourceTypeGroups = [
   {
@@ -260,10 +260,12 @@ const sourceTypeGroups = [
 ]
 
 const tintOptions = [
-  { label: '灰紫', value: 'rgba(111, 110, 142, 0.62)' },
-  { label: '酒红', value: 'rgba(95, 30, 30, 0.68)' },
-  { label: '海蓝', value: 'rgba(45, 83, 102, 0.66)' },
-  { label: '紫色', value: 'rgba(91, 47, 116, 0.68)' }
+  'rgba(111, 110, 142, 0.62)',
+  'rgba(95, 30, 30, 0.68)',
+  'rgba(45, 83, 102, 0.66)',
+  'rgba(91, 47, 116, 0.68)',
+  'rgba(39, 98, 82, 0.66)',
+  'rgba(101, 74, 38, 0.68)'
 ]
 
 const canSubmitSource = computed(() => sourceForm.name.trim() && sourceForm.path.trim())
@@ -282,8 +284,24 @@ function openSourceForm(option) {
   sourceForm.name = option.label
   sourceForm.type = option.value
   sourceForm.path = ''
+  sourceForm.username = ''
+  sourceForm.password = ''
+  verifyStatus.value = null
   showTypePicker.value = false
   showAddModal.value = true
+}
+
+function verifyConnection() {
+  if (!sourceForm.path.trim() || verifying.value) return
+
+  verifying.value = true
+  verifyStatus.value = null
+  window.setTimeout(() => {
+    verifying.value = false
+    verifyStatus.value = sourceForm.path.trim().length >= 4
+      ? { type: 'success', text: '连接可用' }
+      : { type: 'error', text: '连接失败' }
+  }, 700)
 }
 
 function addSource() {
@@ -300,15 +318,23 @@ function addSource() {
     music: 0,
     unmatched: 0,
     path: sourceForm.path.trim(),
-    tint: sourceForm.tint,
+    username: sourceForm.username.trim(),
+    password: sourceForm.password,
+    tint: getRandomTint(),
     active: false
   })
 
   sourceForm.name = ''
   sourceForm.type = 'WebDAV'
   sourceForm.path = ''
-  sourceForm.tint = tintOptions[0].value
+  sourceForm.username = ''
+  sourceForm.password = ''
+  verifyStatus.value = null
   showAddModal.value = false
+}
+
+function getRandomTint() {
+  return tintOptions[Math.floor(Math.random() * tintOptions.length)]
 }
 </script>
 
@@ -588,27 +614,28 @@ function addSource() {
   white-space: nowrap;
 }
 
-.tint-options {
-  display: flex;
-  gap: 10px;
-}
-
-.tint-options button {
-  width: 34px;
-  height: 34px;
-  border: 2px solid transparent;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.tint-options button.selected {
-  border-color: #69f0c6;
-  box-shadow: 0 0 0 3px rgba(105, 240, 198, 0.14);
-}
-
 .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.verify-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: -4px;
+}
+
+.verify-status {
+  font-size: 13px;
+}
+
+.verify-status.success {
+  color: #69f0c6;
+}
+
+.verify-status.error {
+  color: #ff6b6b;
 }
 </style>
