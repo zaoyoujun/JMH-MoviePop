@@ -11,6 +11,14 @@ import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    proxy: {
+      '/api': {
+        target: process.env.VITE_API_TARGET || 'http://localhost:8000',
+        changeOrigin: true
+      }
+    }
+  },
   plugins: [
     vue(),
     vueDevTools(),
