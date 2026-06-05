@@ -88,6 +88,7 @@ import {
   HomeOutline,
   MusicalNotesOutline,
   PlayCircleOutline,
+  ServerOutline,
   SettingsOutline,
   SparklesOutline,
   TimeOutline,
@@ -139,6 +140,7 @@ const categoryMenuOptions = movieCategories.map((item) => ({
 }))
 
 const bottomMenuOptions = [
+  { label: '服务器', key: 'Server', icon: renderIcon(ServerOutline) },
   { label: '设置', key: 'Settings', icon: renderIcon(SettingsOutline) }
 ]
 </script>
@@ -146,24 +148,30 @@ const bottomMenuOptions = [
 <style scoped>
 .movie-shell {
   height: 100vh;
+  min-height: 0;
   color: #eef3ff;
   background: #080b10;
+  overflow: hidden;
 }
 
 .movie-sider {
+  height: 100vh;
   background: linear-gradient(180deg, #111722 0%, #0c1018 54%, #090b10 100%);
 }
 
+.movie-sider :deep(.n-layout-sider__border) {
+  height: 100vh;
+}
+
 .movie-sider :deep(.n-layout-sider-scroll-container) {
-  height: 100%;
+  height: 100vh;
   overflow: hidden !important;
 }
 
 .sider-frame {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  max-height: 100vh;
+  height: 100vh;
   min-height: 0;
   padding: 14px 10px;
   box-sizing: border-box;
@@ -219,7 +227,7 @@ const bottomMenuOptions = [
 
 .category-block {
   display: flex;
-  flex: 1 1 auto;
+  flex: 1 1 0;
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
@@ -258,7 +266,7 @@ const bottomMenuOptions = [
 
 .sider-bottom {
   flex: 0 0 auto;
-  margin-top: 12px;
+  margin-top: auto;
   padding-top: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }

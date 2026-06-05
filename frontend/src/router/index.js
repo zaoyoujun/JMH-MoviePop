@@ -32,6 +32,12 @@ const routes = [
         meta: { title: '观影统计' }
       },
       {
+        path: 'server',
+        name: 'Server',
+        component: () => import('../views/Server.vue'),
+        meta: { title: '服务器' }
+      },
+      {
         path: 'settings',
         name: 'Settings',
         component: () => import('../views/Settings.vue'),
