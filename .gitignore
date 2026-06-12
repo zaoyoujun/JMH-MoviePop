@@ -1,0 +1,25 @@
+# 排除大文件
+backend/mpv-dev-x86_64-v3/
+backend/openlist/openlist.exe
+
+# 排除核心代码参考目录（参考代码，不提交）
+backend/核心代码参考/
+
+# 排除测试文件
+backend/tests/
+
+# 排除 pycache
+__pycache__/
+*.pyc
+
+# 排除数据库文件
+backend/data/*.db
+backend/data/covers/
+backend/data/openlist/
+
+# 排除日志文件
+*.log
+
+# 排除临时文件
+*.tmp
+*.temp
