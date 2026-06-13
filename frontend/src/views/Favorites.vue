@@ -22,30 +22,28 @@
       <article
         v-for="movie in favoriteMovies"
         :key="movie.id"
-        class="favorite-card"
+        class="media-card"
         :style="{ backgroundImage: `url(${movie.cover})` }"
       >
-        <div class="card-badges">
-          <n-tag round size="small" class="type-badge">{{ movie.type }}</n-tag>
-          <n-tag round size="small" class="year-badge">{{ movie.year }}</n-tag>
+        <div class="card-tags">
+          <n-tag round size="small" class="card-type">{{ movie.type }}</n-tag>
+          <n-tag round size="small" class="year-tag">{{ movie.year }}</n-tag>
         </div>
-        <div class="favorite-card-body">
-          <div>
-            <strong>{{ movie.title }}</strong>
-            <span>{{ movie.source }} / 收藏于 {{ movie.savedAt }}</span>
-          </div>
+        <div class="card-footer">
+          <strong>{{ movie.title }}</strong>
           <div class="card-actions">
-            <n-button type="primary" class="play-button">
+            <n-button size="small" class="source-pill">{{ movie.source }}</n-button>
+            <n-button size="small" type="primary" class="small-play">
               <template #icon>
                 <n-icon><Play /></n-icon>
               </template>
               播放
             </n-button>
-            <n-button secondary class="detail-button">
+            <n-button size="small" secondary class="small-save">
               <template #icon>
-                <n-icon><InformationCircleOutline /></n-icon>
+                <n-icon><Heart /></n-icon>
               </template>
-              详情
+              已收藏
             </n-button>
           </div>
         </div>
@@ -55,7 +53,7 @@
 </template>
 
 <script setup>
-import { InformationCircleOutline, Play } from '@vicons/ionicons5'
+import { InformationCircleOutline, Play, Heart } from '@vicons/ionicons5'
 
 const summary = [
   { label: '全部收藏', value: 18 },
@@ -197,81 +195,7 @@ const favoriteMovies = [
 
 .favorite-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   gap: 18px;
-}
-
-.favorite-card {
-  position: relative;
-  min-height: 340px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  border-radius: 14px;
-  background-position: center;
-  background-size: cover;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.32);
-}
-
-.favorite-card::after {
-  position: absolute;
-  inset: 0;
-  content: "";
-  background: linear-gradient(0deg, rgba(5, 9, 18, 0.94) 0%, rgba(5, 9, 18, 0.16) 62%);
-}
-
-.card-badges,
-.favorite-card-body {
-  position: absolute;
-  z-index: 2;
-  left: 14px;
-  right: 14px;
-}
-
-.card-badges {
-  top: 14px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.type-badge {
-  color: #e7f9ff;
-  background: rgba(15, 31, 47, 0.72);
-}
-
-.year-badge {
-  color: #071016;
-  background: linear-gradient(135deg, #69f0c6, #32c6ff);
-}
-
-.favorite-card-body {
-  bottom: 14px;
-}
-
-.favorite-card-body strong {
-  display: block;
-  color: #fff;
-  font-size: 19px;
-}
-
-.favorite-card-body span {
-  display: block;
-  margin: 6px 0 13px;
-  color: #a8b2c3;
-}
-
-.card-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.play-button {
-  color: #06121a;
-  background: linear-gradient(135deg, #69f0c6, #32c6ff);
-}
-
-.detail-button {
-  color: #f7f9ff;
-  background: rgba(9, 14, 24, 0.62);
 }
 </style>
